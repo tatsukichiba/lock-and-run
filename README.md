@@ -13,7 +13,7 @@ It turns on best-effort Windows sleep prevention, starts a lightweight process s
 - Shows currently running monitored processes.
 - Reads monitored process names from `appsettings.json`.
 - Shows a simple report after you unlock Windows and return.
-- Estimates background activity from process survival and CPU time differences, not from direct AI task progress.
+- Estimates background activity from process survival and CPU time differences. It does not guarantee AI processing progress itself.
 
 ## What it does not do
 
@@ -24,6 +24,7 @@ It turns on best-effort Windows sleep prevention, starts a lightweight process s
 - It is not a recommendation to leave your PC unattended in public places.
 - Sleep prevention is best effort and can still be overridden by Windows policy, battery settings, forced shutdowns, updates, or hardware power events.
 - CPU time reporting is also best effort; inaccessible or exited processes are shown without CPU time comparison.
+- The report estimates activity from process survival and CPU time differences; it does not guarantee AI processing progress itself.
 - AI Away Guard disables sleep prevention after the session unlock event or when the app exits normally.
 - For important work, verify the behavior yourself on your own machine.
 
