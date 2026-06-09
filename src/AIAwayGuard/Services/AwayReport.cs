@@ -27,42 +27,23 @@ public sealed class AwayReport
 
     public IReadOnlyList<MonitoredProcessInfo> EndProcesses { get; }
 
-    public int StillRunningCount => StartProcesses.Count(process =>
-        EndProcesses.Any(current => current.ProcessId == process.ProcessId));
+    public int StillRunningCount => StartProcesses.Count(start =>
+        FindMatchingEndProcess(start) is not null);
 
     public int EndedCount => StartProcesses.Count - StillRunningCount;
 
-    public int NewCount => EndProcesses.Count(process =>
-        StartProcesses.All(started => started.ProcessId != process.ProcessId));
+    public int NewCount => EndProcesses.Count(end =>
+        StartProcesses.All(start => !IsSameProcessInstance(start, end)));
 
     public int CpuTimeIncreasedCount => StartProcesses.Count(start =>
     {
-        if (start.TotalProcessorTime is null)
-        {
-            return false;
-        }
-
-        var end = EndProcesses.FirstOrDefault(current => current.ProcessId == start.ProcessId);
-        return end?.TotalProcessorTime is not null &&
-            end.TotalProcessorTime > start.TotalProcessorTime;
+        return TryGetCpuTimeDelta(start, out var delta) && delta > TimeSpan.Zero;
     });
 
     public IReadOnlyList<CpuTimeDelta> TopCpuTimeDeltas => StartProcesses
         .Select(start =>
         {
-            if (start.TotalProcessorTime is null)
-            {
-                return null;
-            }
-
-            var end = EndProcesses.FirstOrDefault(current => current.ProcessId == start.ProcessId);
-            if (end?.TotalProcessorTime is null)
-            {
-                return null;
-            }
-
-            var delta = end.TotalProcessorTime.Value - start.TotalProcessorTime.Value;
-            return delta > TimeSpan.Zero
+            return TryGetCpuTimeDelta(start, out var delta) && delta > TimeSpan.Zero
                 ? new CpuTimeDelta(start.Name, start.ProcessId, delta)
                 : null;
         })
@@ -104,6 +85,47 @@ public sealed class AwayReport
         }
 
         return summary.ToString();
+    }
+
+    private MonitoredProcessInfo? FindMatchingEndProcess(MonitoredProcessInfo start)
+    {
+        return EndProcesses.FirstOrDefault(end => IsSameProcessInstance(start, end));
+    }
+
+    private static bool IsSameProcessInstance(MonitoredProcessInfo start, MonitoredProcessInfo end)
+    {
+        if (start.ProcessId != end.ProcessId)
+        {
+            return false;
+        }
+
+        if (start.StartedAt is not null &&
+            end.StartedAt is not null &&
+            start.StartedAt != end.StartedAt)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool TryGetCpuTimeDelta(MonitoredProcessInfo start, out TimeSpan delta)
+    {
+        delta = TimeSpan.Zero;
+
+        if (start.TotalProcessorTime is null)
+        {
+            return false;
+        }
+
+        var end = FindMatchingEndProcess(start);
+        if (end?.TotalProcessorTime is null)
+        {
+            return false;
+        }
+
+        delta = end.TotalProcessorTime.Value - start.TotalProcessorTime.Value;
+        return true;
     }
 
     public sealed record CpuTimeDelta(string Name, int ProcessId, TimeSpan Delta);

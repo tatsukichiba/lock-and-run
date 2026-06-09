@@ -14,6 +14,7 @@ It turns on best-effort Windows sleep prevention, starts a lightweight process s
 - Reads monitored process names from `appsettings.json`.
 - Shows a simple report after you unlock Windows and return.
 - Estimates background activity from process survival and CPU time differences. It does not guarantee AI processing progress itself.
+- Compares returning processes by PID and, when available, process start time to reduce PID reuse false positives.
 
 ## What it does not do
 
