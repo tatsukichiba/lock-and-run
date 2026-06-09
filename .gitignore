@@ -1,0 +1,8 @@
+bin/
+obj/
+.vs/
+.dotnet_home/
+outputs/
+work/
+*.user
+*.suo
