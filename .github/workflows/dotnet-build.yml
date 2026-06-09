@@ -30,6 +30,33 @@ jobs:
         shell: pwsh
         run: Compress-Archive -Path publish/AIAwayGuard-v0.1.0-win-x64/* -DestinationPath AIAwayGuard-v0.1.0-win-x64.zip -Force
 
+      - name: Sanity check artifact
+        shell: pwsh
+        run: |
+          $zipPath = "AIAwayGuard-v0.1.0-win-x64.zip"
+          $extractPath = "artifact-check/AIAwayGuard-v0.1.0-win-x64"
+
+          New-Item -ItemType Directory -Path $extractPath -Force | Out-Null
+          Expand-Archive -Path $zipPath -DestinationPath $extractPath -Force
+
+          Get-ChildItem -Path $extractPath -Recurse | Select-Object FullName, Length
+
+          $exePath = Join-Path $extractPath "AIAwayGuard.exe"
+          if (-not (Test-Path $exePath)) {
+            throw "AIAwayGuard.exe was not found in the artifact zip."
+          }
+
+          if ((Get-Item $exePath).Length -le 0) {
+            throw "AIAwayGuard.exe is empty."
+          }
+
+          $settingsPath = Join-Path $extractPath "appsettings.json"
+          if (-not (Test-Path $settingsPath)) {
+            throw "appsettings.json was not found in the artifact zip."
+          }
+
+          Get-Content -Raw -Path $settingsPath | ConvertFrom-Json | Out-Null
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:

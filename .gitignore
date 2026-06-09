@@ -5,6 +5,7 @@ obj/
 outputs/
 work/
 publish/
+artifact-check/
 AIAwayGuard-v*.zip
 *.user
 *.suo

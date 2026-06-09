@@ -82,6 +82,8 @@ PR and branch builds publish a Windows x64 executable zip as a GitHub Actions ar
 3. Extract `AIAwayGuard-v0.1.0-win-x64.zip`.
 4. Run `AIAwayGuard.exe` from the extracted folder.
 
+The artifact structure is validated in CI by extracting the zip, checking for `AIAwayGuard.exe` and `appsettings.json`, confirming the executable is non-empty, and parsing `appsettings.json` as JSON. Actual Windows Lock/Unlock behavior must still be verified on a Windows 11 machine.
+
 ## Publish locally
 
 ```powershell
