@@ -34,6 +34,18 @@ public sealed class AwayReport
     public int NewCount => EndProcesses.Count(process =>
         StartProcesses.All(started => started.ProcessId != process.ProcessId));
 
+    public int CpuTimeIncreasedCount => StartProcesses.Count(start =>
+    {
+        if (start.TotalProcessorTime is null)
+        {
+            return false;
+        }
+
+        var end = EndProcesses.FirstOrDefault(current => current.ProcessId == start.ProcessId);
+        return end?.TotalProcessorTime is not null &&
+            end.TotalProcessorTime > start.TotalProcessorTime;
+    });
+
     public static AwayReport Create(AwaySession session, IReadOnlyList<MonitoredProcessInfo> endProcesses)
     {
         return new AwayReport(session.StartedAt, DateTimeOffset.Now, session.StartProcesses, endProcesses);
@@ -51,6 +63,7 @@ public sealed class AwayReport
                Still running: {StillRunningCount}
                Ended during away: {EndedCount}
                New matching processes: {NewCount}
+               CPU time increased: {CpuTimeIncreasedCount}
                """;
     }
 }

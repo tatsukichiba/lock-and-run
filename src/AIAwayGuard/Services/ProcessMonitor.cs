@@ -71,6 +71,7 @@ public sealed class ProcessMonitor
             processName,
             process.Id,
             TryGetStartTime(process),
+            TryGetTotalProcessorTime(process),
             TryGetMainWindowTitle(process));
     }
 
@@ -95,6 +96,18 @@ public sealed class ProcessMonitor
         catch
         {
             return string.Empty;
+        }
+    }
+
+    private static TimeSpan? TryGetTotalProcessorTime(Process process)
+    {
+        try
+        {
+            return process.TotalProcessorTime;
+        }
+        catch
+        {
+            return null;
         }
     }
 }
