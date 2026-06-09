@@ -4,5 +4,7 @@ obj/
 .dotnet_home/
 outputs/
 work/
+publish/
+AIAwayGuard-v*.zip
 *.user
 *.suo

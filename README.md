@@ -73,6 +73,22 @@ Requirements:
 dotnet build
 ```
 
+## Download GitHub Actions artifact
+
+PR and branch builds publish a Windows x64 executable zip as a GitHub Actions artifact.
+
+1. Open the latest `.NET Build` workflow run in GitHub Actions.
+2. Download the `AIAwayGuard-v0.1.0-win-x64` artifact.
+3. Extract `AIAwayGuard-v0.1.0-win-x64.zip`.
+4. Run `AIAwayGuard.exe` from the extracted folder.
+
+## Publish locally
+
+```powershell
+dotnet publish src/AIAwayGuard/AIAwayGuard.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish/AIAwayGuard-v0.1.0-win-x64
+Compress-Archive -Path publish/AIAwayGuard-v0.1.0-win-x64/* -DestinationPath AIAwayGuard-v0.1.0-win-x64.zip -Force
+```
+
 ## Run
 
 ```powershell
