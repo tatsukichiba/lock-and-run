@@ -9,12 +9,16 @@ public sealed class AwayReport
         DateTimeOffset startedAt,
         DateTimeOffset endedAt,
         IReadOnlyList<MonitoredProcessInfo> startProcesses,
-        IReadOnlyList<MonitoredProcessInfo> endProcesses)
+        IReadOnlyList<MonitoredProcessInfo> endProcesses,
+        AppResourceSnapshot appResourceAtStart,
+        AppResourceSnapshot appResourceAtReturn)
     {
         StartedAt = startedAt;
         EndedAt = endedAt;
         StartProcesses = startProcesses;
         EndProcesses = endProcesses;
+        AppResourceAtStart = appResourceAtStart;
+        AppResourceAtReturn = appResourceAtReturn;
     }
 
     public DateTimeOffset StartedAt { get; }
@@ -26,6 +30,14 @@ public sealed class AwayReport
     public IReadOnlyList<MonitoredProcessInfo> StartProcesses { get; }
 
     public IReadOnlyList<MonitoredProcessInfo> EndProcesses { get; }
+
+    public AppResourceSnapshot AppResourceAtStart { get; }
+
+    public AppResourceSnapshot AppResourceAtReturn { get; }
+
+    public long AppMemoryDeltaBytes => AppResourceAtReturn.WorkingSetBytes - AppResourceAtStart.WorkingSetBytes;
+
+    public TimeSpan AppCpuTimeDelta => AppResourceAtReturn.TotalProcessorTime - AppResourceAtStart.TotalProcessorTime;
 
     public int StillRunningCount => StartProcesses.Count(start =>
         FindMatchingEndProcess(start) is not null);
@@ -52,9 +64,18 @@ public sealed class AwayReport
         .Take(5)
         .ToList();
 
-    public static AwayReport Create(AwaySession session, IReadOnlyList<MonitoredProcessInfo> endProcesses)
+    public static AwayReport Create(
+        AwaySession session,
+        IReadOnlyList<MonitoredProcessInfo> endProcesses,
+        AppResourceSnapshot appResourceAtReturn)
     {
-        return new AwayReport(session.StartedAt, DateTimeOffset.Now, session.StartProcesses, endProcesses);
+        return new AwayReport(
+            session.StartedAt,
+            DateTimeOffset.Now,
+            session.StartProcesses,
+            endProcesses,
+            session.AppResourceAtStart,
+            appResourceAtReturn);
     }
 
     public string ToSummary()
@@ -70,6 +91,11 @@ public sealed class AwayReport
             Ended during away: {EndedCount}
             New matching processes: {NewCount}
             CPU time increased: {CpuTimeIncreasedCount}
+
+            App memory at start: {ToMegabytes(AppResourceAtStart.WorkingSetBytes):F1} MB
+            App memory at return: {ToMegabytes(AppResourceAtReturn.WorkingSetBytes):F1} MB
+            App memory delta: {ToMegabytes(AppMemoryDeltaBytes):+0.0;-0.0;0.0} MB
+            App CPU time delta: {AppCpuTimeDelta.TotalSeconds:F1} seconds
             """);
 
         var topCpuTimeDeltas = TopCpuTimeDeltas;
@@ -126,6 +152,11 @@ public sealed class AwayReport
 
         delta = end.TotalProcessorTime.Value - start.TotalProcessorTime.Value;
         return true;
+    }
+
+    private static double ToMegabytes(long bytes)
+    {
+        return bytes / 1024d / 1024d;
     }
 
     public sealed record CpuTimeDelta(string Name, int ProcessId, TimeSpan Delta);

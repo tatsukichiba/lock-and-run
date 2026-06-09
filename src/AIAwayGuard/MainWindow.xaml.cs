@@ -83,8 +83,9 @@ public partial class MainWindow : Window
         try
         {
             var runningProcesses = _processMonitor.GetRunningProcesses();
+            var appResourceAtStart = AppResourceSnapshot.CaptureCurrentProcess();
             _powerGuard.Enable();
-            _currentSession = new AwaySession(DateTimeOffset.Now, runningProcesses);
+            _currentSession = new AwaySession(DateTimeOffset.Now, runningProcesses, appResourceAtStart);
             RefreshProcessList(runningProcesses);
 
             StatusTextBlock.Text = $"Away mode active since {_currentSession.StartedAt:HH:mm:ss}. Windows is locking now.";
@@ -129,7 +130,8 @@ public partial class MainWindow : Window
         try
         {
             var runningProcesses = _processMonitor.GetRunningProcesses();
-            var report = AwayReport.Create(_currentSession, runningProcesses);
+            var appResourceAtReturn = AppResourceSnapshot.CaptureCurrentProcess();
+            var report = AwayReport.Create(_currentSession, runningProcesses, appResourceAtReturn);
             _currentSession = null;
 
             RefreshProcessList(runningProcesses);

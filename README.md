@@ -15,6 +15,7 @@ It turns on best-effort Windows sleep prevention, starts a lightweight process s
 - Shows a simple report after you unlock Windows and return.
 - Estimates background activity from process survival and CPU time differences. It does not guarantee AI processing progress itself.
 - Compares returning processes by PID and, when available, process start time to reduce PID reuse false positives.
+- Reports AI Away Guard's own memory and CPU time deltas, which can help spot app memory growth while away mode is active.
 
 ## What it does not do
 
@@ -26,6 +27,7 @@ It turns on best-effort Windows sleep prevention, starts a lightweight process s
 - Sleep prevention is best effort and can still be overridden by Windows policy, battery settings, forced shutdowns, updates, or hardware power events.
 - CPU time reporting is also best effort; inaccessible or exited processes are shown without CPU time comparison.
 - The report estimates activity from process survival and CPU time differences; it does not guarantee AI processing progress itself.
+- App memory reporting is a lightweight WorkingSet64 snapshot and can be used as an early signal, not as a full memory profiler.
 - AI Away Guard disables sleep prevention after the session unlock event or when the app exits normally.
 - For important work, verify the behavior yourself on your own machine.
 
