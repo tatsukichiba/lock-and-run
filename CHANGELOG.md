@@ -4,6 +4,7 @@
 
 - Added initial WPF tray app prototype.
 - Added single-instance guard with a named Mutex.
+- Improved second launch behavior to show the existing window instead of opening another tray instance.
 - Added Away Mode Start action.
 - Added best-effort sleep prevention through Windows `SetThreadExecutionState`.
 - Added real Windows lock through `LockWorkStation`.

@@ -175,10 +175,13 @@ public partial class MainWindow : Window
             : $"Ready. Monitoring {processes.Count} running process(es).";
     }
 
-    private void ShowMainWindow()
+    public void ShowMainWindow()
     {
         Show();
         WindowState = WindowState.Normal;
+        Activate();
+        Topmost = true;
+        Topmost = false;
         Activate();
     }
 

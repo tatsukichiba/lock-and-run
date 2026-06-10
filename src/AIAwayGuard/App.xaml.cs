@@ -6,8 +6,11 @@ namespace AIAwayGuard;
 public partial class App : System.Windows.Application
 {
     private const string SingleInstanceMutexName = @"Local\AIAwayGuard.SingleInstance";
+    private const string ShowMainWindowEventName = @"Local\AIAwayGuard.ShowMainWindow";
 
     private Mutex? _singleInstanceMutex;
+    private EventWaitHandle? _showMainWindowEvent;
+    private RegisteredWaitHandle? _showMainWindowRegistration;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -17,25 +20,38 @@ public partial class App : System.Windows.Application
             _singleInstanceMutex.Dispose();
             _singleInstanceMutex = null;
 
-            System.Windows.MessageBox.Show(
-                "AI Away Guard is already running.",
-                "AI Away Guard",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
-
+            TrySignalExistingInstance();
             Shutdown();
             return;
         }
+
+        _showMainWindowEvent = new EventWaitHandle(
+            false,
+            EventResetMode.AutoReset,
+            ShowMainWindowEventName);
+        _showMainWindowRegistration = ThreadPool.RegisterWaitForSingleObject(
+            _showMainWindowEvent,
+            OnShowMainWindowRequested,
+            null,
+            Timeout.Infinite,
+            false);
 
         base.OnStartup(e);
 
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
         var mainWindow = new MainWindow();
+        MainWindow = mainWindow;
         mainWindow.Show();
     }
 
     protected override void OnExit(ExitEventArgs e)
     {
+        _showMainWindowRegistration?.Unregister(null);
+        _showMainWindowRegistration = null;
+
+        _showMainWindowEvent?.Dispose();
+        _showMainWindowEvent = null;
+
         if (_singleInstanceMutex is not null)
         {
             _singleInstanceMutex.ReleaseMutex();
@@ -44,5 +60,40 @@ public partial class App : System.Windows.Application
         }
 
         base.OnExit(e);
+    }
+
+    private static void TrySignalExistingInstance()
+    {
+        try
+        {
+            using var showMainWindowEvent = EventWaitHandle.OpenExisting(ShowMainWindowEventName);
+            showMainWindowEvent.Set();
+        }
+        catch (Exception ex) when (
+            ex is WaitHandleCannotBeOpenedException ||
+            ex is UnauthorizedAccessException)
+        {
+            System.Windows.MessageBox.Show(
+                "AI Away Guard is already running, but the existing window could not be requested.",
+                "AI Away Guard",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+        }
+    }
+
+    private void OnShowMainWindowRequested(object? state, bool timedOut)
+    {
+        if (timedOut)
+        {
+            return;
+        }
+
+        Dispatcher.BeginInvoke(() =>
+        {
+            if (MainWindow is MainWindow mainWindow)
+            {
+                mainWindow.ShowMainWindow();
+            }
+        });
     }
 }

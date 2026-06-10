@@ -123,7 +123,7 @@ dotnet run --project src/AIAwayGuard/AIAwayGuard.csproj
 
 Use **Away Mode Start** from the main window or tray menu. AI Away Guard snapshots the monitored processes and its own resource usage, enables best-effort sleep prevention, and then calls the real Windows `LockWorkStation` API. When you unlock and return, AI Away Guard disables sleep prevention and displays a short activity-estimation report.
 
-AI Away Guard uses a named Mutex to prevent multiple simultaneous instances. If it is already running, a second launch shows a short notice and exits without creating another tray icon.
+AI Away Guard uses a named Mutex to prevent multiple simultaneous instances. If it is already running, a second launch requests the existing instance to show and activate its main window, then exits without creating another tray icon.
 
 ## Roadmap
 
