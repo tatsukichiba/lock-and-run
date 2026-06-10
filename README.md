@@ -51,8 +51,8 @@ Compared with pressing `Win + L`, Lock & Run's main added value is best-effort s
 - `codex`
 - `code`
 - `cursor`
-- `Claude`
-- `ClaudeCowork`
+- `claude`
+- `cowork-svc`
 - `ollama`
 - `python`
 - `node`
@@ -70,8 +70,8 @@ Edit `src/LockRun/appsettings.json`:
 {
   "monitoredProcessNames": [
     "codex",
-    "Claude",
-    "ClaudeCowork",
+    "claude",
+    "cowork-svc",
     "ollama",
     "python",
     "node"
