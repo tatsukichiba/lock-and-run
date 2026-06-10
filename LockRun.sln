@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIAwayGuard", "src\AIAwayGuard\AIAwayGuard.csproj", "{154EAF21-A61E-40F3-A17B-A0174BEC0D26}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LockRun", "src\LockRun\LockRun.csproj", "{154EAF21-A61E-40F3-A17B-A0174BEC0D26}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

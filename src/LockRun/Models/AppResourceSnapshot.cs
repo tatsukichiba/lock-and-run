@@ -1,4 +1,4 @@
-namespace AIAwayGuard.Models;
+namespace LockRun.Models;
 
 public sealed record AppResourceSnapshot(
     long WorkingSetBytes,

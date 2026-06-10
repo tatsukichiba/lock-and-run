@@ -1,8 +1,8 @@
-using AIAwayGuard.Models;
+using LockRun.Models;
 using System.Globalization;
 using System.Text;
 
-namespace AIAwayGuard.Services;
+namespace LockRun.Services;
 
 public sealed class AwayReport
 {

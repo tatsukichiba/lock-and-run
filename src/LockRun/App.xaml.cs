@@ -1,12 +1,12 @@
 using System.Threading;
 using System.Windows;
 
-namespace AIAwayGuard;
+namespace LockRun;
 
 public partial class App : System.Windows.Application
 {
-    private const string SingleInstanceMutexName = @"Local\AIAwayGuard.SingleInstance";
-    private const string ShowMainWindowEventName = @"Local\AIAwayGuard.ShowMainWindow";
+    private const string SingleInstanceMutexName = @"Local\LockRun.SingleInstance";
+    private const string ShowMainWindowEventName = @"Local\LockRun.ShowMainWindow";
 
     private Mutex? _singleInstanceMutex;
     private EventWaitHandle? _showMainWindowEvent;
@@ -74,8 +74,8 @@ public partial class App : System.Windows.Application
             ex is UnauthorizedAccessException)
         {
             System.Windows.MessageBox.Show(
-                "AI Away Guard is already running, but the existing window could not be requested.",
-                "AI Away Guard",
+                "Lock & Run is already running, but the existing window could not be requested.",
+                "Lock & Run",
                 MessageBoxButton.OK,
                 MessageBoxImage.Warning);
         }

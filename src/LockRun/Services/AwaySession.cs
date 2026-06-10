@@ -1,6 +1,6 @@
-using AIAwayGuard.Models;
+using LockRun.Models;
 
-namespace AIAwayGuard.Services;
+namespace LockRun.Services;
 
 public sealed class AwaySession(
     DateTimeOffset startedAt,

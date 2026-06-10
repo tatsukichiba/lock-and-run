@@ -1,6 +1,10 @@
-# AI Away Guard
+# Lock & Run
 
-AI Away Guard is a small open-source Windows 11 tray app for people who leave long-running local AI and build jobs running while they step away.
+Lock your PC. Keep jobs awake. Check what ran while you were away.
+
+PCをロックしたまま、離席中のAI・開発タスクの稼働状況を確認するWindows常駐アプリです。
+
+Lock & Run is a small open-source Windows 11 tray app for people who leave long-running local AI and build jobs running while they step away.
 
 It turns on best-effort Windows sleep prevention, starts a lightweight process snapshot, and then calls the real Windows `LockWorkStation` API.
 
@@ -8,9 +12,9 @@ It turns on best-effort Windows sleep prevention, starts a lightweight process s
 
 - Windows session lock through the standard Windows lock screen.
 - Best-effort sleep prevention while away mode is active.
-- After-unlock activity report for monitored processes and AI Away Guard itself.
+- After-unlock activity report for monitored processes and Lock & Run itself.
 
-Compared with pressing `Win + L`, AI Away Guard's main added value is best-effort sleep prevention plus the after-unlock away report. It does not replace or strengthen Windows authentication.
+Compared with pressing `Win + L`, Lock & Run's main added value is best-effort sleep prevention plus the after-unlock away report. It does not replace or strengthen Windows authentication.
 
 ## What it does
 
@@ -22,9 +26,9 @@ Compared with pressing `Win + L`, AI Away Guard's main added value is best-effor
 - Shows currently running monitored processes.
 - Reads monitored process names from `appsettings.json`.
 - Shows a simple report after you unlock Windows and return.
-- Estimates background activity from process survival, CPU time deltas, and AI Away Guard's own memory/CPU deltas. These signals do not guarantee that any AI processing finished successfully.
+- Estimates background activity from process survival, CPU time deltas, and Lock & Run's own memory/CPU deltas. These signals do not guarantee that any AI processing finished successfully.
 - Compares returning processes by PID and, when available, process start time to reduce PID reuse false positives.
-- Reports AI Away Guard's own memory and CPU time deltas, which can help spot app memory growth while away mode is active.
+- Reports Lock & Run's own memory and CPU time deltas, which can help spot app memory growth while away mode is active.
 
 ## What it does not do
 
@@ -37,7 +41,7 @@ Compared with pressing `Win + L`, AI Away Guard's main added value is best-effor
 - CPU time reporting is also best effort; inaccessible or exited processes are shown without CPU time comparison.
 - The report estimates activity from process survival, CPU time deltas, and app memory/CPU deltas; it does not guarantee AI processing completion or correctness.
 - App memory reporting is a lightweight WorkingSet64 snapshot and can be used as an activity or growth signal, not as a full memory profiler.
-- AI Away Guard disables sleep prevention after the session unlock event or when the app exits normally.
+- Lock & Run disables sleep prevention after the session unlock event or when the app exits normally.
 - The executable is unsigned, so Windows SmartScreen may show a warning before launch.
 - CI verifies build and packaging only; real lock, unlock, and sleep-prevention behavior must still be checked on an actual Windows 11 machine.
 - For important work, verify the behavior yourself on your own machine.
@@ -60,7 +64,7 @@ Compared with pressing `Win + L`, AI Away Guard's main added value is best-effor
 
 ## Configure monitored processes
 
-Edit `src/AIAwayGuard/appsettings.json`:
+Edit `src/LockRun/appsettings.json`:
 
 ```json
 {
@@ -77,7 +81,7 @@ Edit `src/AIAwayGuard/appsettings.json`:
 
 The file is copied next to the built application. You can also edit the deployed `appsettings.json` after publishing.
 
-If a process does not appear in AI Away Guard, check the actual Windows process name with PowerShell and add that `ProcessName` value to `appsettings.json`:
+If a process does not appear in Lock & Run, check the actual Windows process name with PowerShell and add that `ProcessName` value to `appsettings.json`:
 
 ```powershell
 Get-Process | Sort-Object ProcessName | Select-Object ProcessName, Id, MainWindowTitle
@@ -91,7 +95,7 @@ Requirements:
 - .NET 8 SDK or newer
 
 ```powershell
-dotnet build
+dotnet build LockRun.sln --configuration Release
 ```
 
 ## Download GitHub Actions artifact
@@ -99,31 +103,31 @@ dotnet build
 PR and branch builds publish a Windows x64 executable zip as a GitHub Actions artifact.
 
 1. Open the latest `.NET Build` workflow run in GitHub Actions.
-2. Download the `AIAwayGuard-v0.1.0-win-x64` artifact.
+2. Download the `LockRun-v0.1.0-win-x64` artifact.
 3. If GitHub downloads an artifact wrapper zip, extract it first.
-4. Extract `AIAwayGuard-v0.1.0-win-x64.zip`.
-5. Run `AIAwayGuard.exe` from the extracted folder. Keep `appsettings.json` next to the executable.
+4. Extract `LockRun-v0.1.0-win-x64.zip`.
+5. Run `LockRun.exe` from the extracted folder. Keep `appsettings.json` next to the executable.
 
-The artifact structure is validated in CI by extracting the zip, checking for `AIAwayGuard.exe` and `appsettings.json`, confirming the executable is non-empty, and parsing `appsettings.json` as JSON. Actual Windows Lock/Unlock behavior must still be verified on a real Windows 11 machine.
+The artifact structure is validated in CI by extracting the zip, checking for `LockRun.exe` and `appsettings.json`, confirming the executable is non-empty, and parsing `appsettings.json` as JSON. Actual Windows Lock/Unlock behavior must still be verified on a real Windows 11 machine.
 
 ## Publish locally
 
 ```powershell
-dotnet publish src/AIAwayGuard/AIAwayGuard.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish/AIAwayGuard-v0.1.0-win-x64
-Compress-Archive -Path publish/AIAwayGuard-v0.1.0-win-x64/* -DestinationPath AIAwayGuard-v0.1.0-win-x64.zip -Force
+dotnet publish src/LockRun/LockRun.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish/LockRun-v0.1.0-win-x64
+Compress-Archive -Path publish/LockRun-v0.1.0-win-x64/* -DestinationPath LockRun-v0.1.0-win-x64.zip -Force
 ```
 
-To test the local publish output, either run `publish/AIAwayGuard-v0.1.0-win-x64/AIAwayGuard.exe` directly or extract `AIAwayGuard-v0.1.0-win-x64.zip` and run `AIAwayGuard.exe` from the extracted folder.
+To test the local publish output, either run `publish/LockRun-v0.1.0-win-x64/LockRun.exe` directly or extract `LockRun-v0.1.0-win-x64.zip` and run `LockRun.exe` from the extracted folder.
 
 ## Run
 
 ```powershell
-dotnet run --project src/AIAwayGuard/AIAwayGuard.csproj
+dotnet run --project src/LockRun/LockRun.csproj
 ```
 
-Use **Away Mode Start** from the main window or tray menu. AI Away Guard snapshots the monitored processes and its own resource usage, enables best-effort sleep prevention, and then calls the real Windows `LockWorkStation` API. When you unlock and return, AI Away Guard disables sleep prevention and displays a short activity-estimation report.
+Use **Away Mode Start** from the main window or tray menu. Lock & Run snapshots the monitored processes and its own resource usage, enables best-effort sleep prevention, and then calls the real Windows `LockWorkStation` API. When you unlock and return, Lock & Run disables sleep prevention and displays a short activity-estimation report.
 
-AI Away Guard uses a named Mutex to prevent multiple simultaneous instances. If it is already running, a second launch requests the existing instance to show and activate its main window, then exits without creating another tray icon.
+Lock & Run uses a named Mutex to prevent multiple simultaneous instances. If it is already running, a second launch requests the existing instance to show and activate its main window, then exits without creating another tray icon.
 
 ## Roadmap
 

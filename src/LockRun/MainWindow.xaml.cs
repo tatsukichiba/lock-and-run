@@ -2,15 +2,17 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows;
-using AIAwayGuard.Models;
-using AIAwayGuard.Services;
+using LockRun.Models;
+using LockRun.Services;
 using Microsoft.Win32;
 using Forms = System.Windows.Forms;
 
-namespace AIAwayGuard;
+namespace LockRun;
 
 public partial class MainWindow : Window
 {
+    private const string ProductDisplayName = "Lock & Run";
+
     private readonly ObservableCollection<ProcessRow> _processRows = [];
     private readonly ProcessMonitor _processMonitor;
     private readonly WindowsPowerGuard _powerGuard = new();
@@ -60,7 +62,7 @@ public partial class MainWindow : Window
 
         var notifyIcon = new Forms.NotifyIcon
         {
-            Text = "AI Away Guard",
+            Text = ProductDisplayName,
             Icon = SystemIcons.Shield,
             ContextMenuStrip = contextMenu
         };
@@ -91,7 +93,7 @@ public partial class MainWindow : Window
             StatusTextBlock.Text = $"Away mode active since {_currentSession.StartedAt:HH:mm:ss}. Windows is locking now.";
             _notifyIcon.ShowBalloonTip(
                 3000,
-                "AI Away Guard",
+                ProductDisplayName,
                 "Sleep prevention is on. Windows is locking now.",
                 Forms.ToolTipIcon.Info);
 
@@ -105,7 +107,7 @@ public partial class MainWindow : Window
             StatusTextBlock.Text = "Away mode failed.";
             Forms.MessageBox.Show(
                 ex.Message,
-                "AI Away Guard",
+                ProductDisplayName,
                 Forms.MessageBoxButtons.OK,
                 Forms.MessageBoxIcon.Error);
         }
@@ -140,7 +142,7 @@ public partial class MainWindow : Window
             ShowMainWindow();
             _notifyIcon.ShowBalloonTip(
                 5000,
-                "AI Away Guard",
+                ProductDisplayName,
                 $"Away session ended. Still running: {report.StillRunningCount}, ended: {report.EndedCount}.",
                 Forms.ToolTipIcon.Info);
         }

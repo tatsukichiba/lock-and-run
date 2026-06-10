@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 
-namespace AIAwayGuard.Services;
+namespace LockRun.Services;
 
 public sealed class WindowsPowerGuard
 {

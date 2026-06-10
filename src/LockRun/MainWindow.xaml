@@ -1,10 +1,10 @@
-<Window x:Class="AIAwayGuard.MainWindow"
+<Window x:Class="LockRun.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="AI Away Guard" Height="580" Width="920"
+        Title="Lock &amp; Run" Height="580" Width="920"
         MinHeight="520" MinWidth="760"
         Background="#F6F7F9">
     <Grid Margin="24">
@@ -17,11 +17,11 @@
 
         <DockPanel Grid.Row="0" LastChildFill="False">
             <StackPanel DockPanel.Dock="Left">
-                <TextBlock Text="AI Away Guard"
+                <TextBlock Text="Lock &amp; Run"
                            FontSize="26"
                            FontWeight="SemiBold"
                            Foreground="#20242A" />
-                <TextBlock Text="Lock Windows and keep background jobs awake while you are away."
+                <TextBlock Text="Lock your PC. Keep jobs awake. Check what ran while you were away."
                            Margin="0,6,0,0"
                            Foreground="#5E6673" />
             </StackPanel>
@@ -127,6 +127,6 @@
         <TextBlock Grid.Row="3"
                    Margin="0,14,0,0"
                    Foreground="#5E6673"
-                   Text="Closing the window keeps AI Away Guard in the tray. Use the tray menu to exit." />
+                   Text="Closing the window keeps Lock &amp; Run in the tray. Use the tray menu to exit." />
     </Grid>
 </Window>

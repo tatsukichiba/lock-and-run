@@ -1,8 +1,8 @@
 using System.IO;
 using System.Text.Json;
-using AIAwayGuard.Models;
+using LockRun.Models;
 
-namespace AIAwayGuard.Services;
+namespace LockRun.Services;
 
 public static class SettingsLoader
 {
