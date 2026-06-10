@@ -6,6 +6,6 @@ outputs/
 work/
 publish/
 artifact-check/
-AIAwayGuard-v*.zip
+*.zip
 *.user
 *.suo
