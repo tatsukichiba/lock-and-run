@@ -4,9 +4,18 @@ AI Away Guard is a small open-source Windows 11 tray app for people who leave lo
 
 It turns on best-effort Windows sleep prevention, starts a lightweight process snapshot, and then calls the real Windows `LockWorkStation` API.
 
+## Main value
+
+- Windows session lock through the standard Windows lock screen.
+- Best-effort sleep prevention while away mode is active.
+- After-unlock activity report for monitored processes and AI Away Guard itself.
+
+Compared with pressing `Win + L`, AI Away Guard's main added value is best-effort sleep prevention plus the after-unlock away report. It does not replace or strengthen Windows authentication.
+
 ## What it does
 
 - Runs as a Windows tray app.
+- Prevents multiple simultaneous app instances.
 - Provides an **Away Mode Start** action.
 - Enables sleep prevention with the Windows `SetThreadExecutionState` API.
 - Locks the workstation with the Windows `LockWorkStation` API.
@@ -113,6 +122,18 @@ dotnet run --project src/AIAwayGuard/AIAwayGuard.csproj
 ```
 
 Use **Away Mode Start** from the main window or tray menu. AI Away Guard snapshots the monitored processes and its own resource usage, enables best-effort sleep prevention, and then calls the real Windows `LockWorkStation` API. When you unlock and return, AI Away Guard disables sleep prevention and displays a short activity-estimation report.
+
+AI Away Guard uses a named Mutex to prevent multiple simultaneous instances. If it is already running, a second launch shows a short notice and exits without creating another tray icon.
+
+## Roadmap
+
+- English / Japanese language switching
+- Startup registration
+- Persistent report log
+- Advanced process filters by executable path / window title
+- File/log growth checks
+- Exit code / process completion tracking
+- Optional GPU activity reporting
 
 ## License
 

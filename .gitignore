@@ -6,6 +6,7 @@ outputs/
 work/
 publish/
 artifact-check/
+artifact-test/
 *.zip
 *.user
 *.suo
