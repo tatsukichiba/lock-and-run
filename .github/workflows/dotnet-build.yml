@@ -1,0 +1,64 @@
+name: .NET Build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore LockRun.sln
+
+      - name: Build
+        run: dotnet build LockRun.sln --configuration Release --no-restore
+
+      - name: Publish win-x64
+        run: dotnet publish src/LockRun/LockRun.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish/LockRun-v0.1.0-win-x64
+
+      - name: Package artifact
+        shell: pwsh
+        run: Compress-Archive -Path publish/LockRun-v0.1.0-win-x64/* -DestinationPath LockRun-v0.1.0-win-x64.zip -Force
+
+      - name: Sanity check artifact
+        shell: pwsh
+        run: |
+          $zipPath = "LockRun-v0.1.0-win-x64.zip"
+          $extractPath = "artifact-check/LockRun-v0.1.0-win-x64"
+
+          New-Item -ItemType Directory -Path $extractPath -Force | Out-Null
+          Expand-Archive -Path $zipPath -DestinationPath $extractPath -Force
+
+          Get-ChildItem -Path $extractPath -Recurse | Select-Object FullName, Length
+
+          $exePath = Join-Path $extractPath "LockRun.exe"
+          if (-not (Test-Path $exePath)) {
+            throw "LockRun.exe was not found in the artifact zip."
+          }
+
+          if ((Get-Item $exePath).Length -le 0) {
+            throw "LockRun.exe is empty."
+          }
+
+          $settingsPath = Join-Path $extractPath "appsettings.json"
+          if (-not (Test-Path $settingsPath)) {
+            throw "appsettings.json was not found in the artifact zip."
+          }
+
+          Get-Content -Raw -Path $settingsPath | ConvertFrom-Json | Out-Null
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LockRun-v0.1.0-win-x64
+          path: LockRun-v0.1.0-win-x64.zip

@@ -1,0 +1,12 @@
+bin/
+obj/
+.vs/
+.dotnet_home/
+outputs/
+work/
+publish/
+artifact-check/
+artifact-test/
+*.zip
+*.user
+*.suo
