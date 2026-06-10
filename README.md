@@ -38,6 +38,8 @@ It turns on best-effort Windows sleep prevention, starts a lightweight process s
 - `codex`
 - `code`
 - `cursor`
+- `Claude`
+- `ClaudeCowork`
 - `ollama`
 - `python`
 - `node`
@@ -55,6 +57,8 @@ Edit `src/AIAwayGuard/appsettings.json`:
 {
   "monitoredProcessNames": [
     "codex",
+    "Claude",
+    "ClaudeCowork",
     "ollama",
     "python",
     "node"
@@ -63,6 +67,12 @@ Edit `src/AIAwayGuard/appsettings.json`:
 ```
 
 The file is copied next to the built application. You can also edit the deployed `appsettings.json` after publishing.
+
+If a process does not appear in AI Away Guard, check the actual Windows process name with PowerShell and add that `ProcessName` value to `appsettings.json`:
+
+```powershell
+Get-Process | Sort-Object ProcessName | Select-Object ProcessName, Id, MainWindowTitle
+```
 
 ## Build
 

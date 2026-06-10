@@ -1,4 +1,5 @@
 using AIAwayGuard.Models;
+using System.Globalization;
 using System.Text;
 
 namespace AIAwayGuard.Services;
@@ -106,11 +107,16 @@ public sealed class AwayReport
             summary.AppendLine("Top CPU time increases:");
             foreach (var delta in topCpuTimeDeltas)
             {
-                summary.AppendLine($"- {delta.Name} (PID {delta.ProcessId}): +{delta.Delta:hh\\:mm\\:ss}");
+                summary.AppendLine($"- {delta.Name} (PID {delta.ProcessId}): {FormatCpuTimeDelta(delta.Delta)}");
             }
         }
 
         return summary.ToString();
+    }
+
+    private static string FormatCpuTimeDelta(TimeSpan delta)
+    {
+        return $"+{delta.TotalSeconds.ToString("F2", CultureInfo.InvariantCulture)} sec";
     }
 
     private MonitoredProcessInfo? FindMatchingEndProcess(MonitoredProcessInfo start)
