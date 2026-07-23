@@ -1,0 +1,63 @@
+name: Bug report
+description: Report a reproducible Lock & Run problem
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping improve Lock & Run. Do not include secrets or private window titles in screenshots or logs.
+  - type: input
+    id: version
+    attributes:
+      label: Lock & Run version
+      placeholder: v0.2.0
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version and device type
+      placeholder: Windows 11 24H2, desktop or laptop
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Include the visible error message and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Start Lock & Run
+        2. Select Monitor and lock
+        3. ...
+    validations:
+      required: true
+  - type: dropdown
+    id: power
+    attributes:
+      label: Power source
+      options:
+        - AC power
+        - Battery
+        - Both
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add sanitized report excerpts or screenshots if useful.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I removed secrets and private window titles from anything attached.
+          required: true
+        - label: I checked that this issue is not already reported.
+          required: true

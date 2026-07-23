@@ -44,6 +44,16 @@ public partial class App : System.Windows.Application
         mainWindow.Show();
     }
 
+    protected override void OnSessionEnding(SessionEndingCancelEventArgs e)
+    {
+        if (MainWindow is MainWindow mainWindow)
+        {
+            mainWindow.PrepareForSystemShutdown();
+        }
+
+        base.OnSessionEnding(e);
+    }
+
     protected override void OnExit(ExitEventArgs e)
     {
         _showMainWindowRegistration?.Unregister(null);
