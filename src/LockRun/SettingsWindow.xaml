@@ -1,0 +1,137 @@
+<Window x:Class="LockRun.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Settings"
+        Width="640"
+        Height="620"
+        MinWidth="540"
+        MinHeight="520"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize"
+        Background="#F6F7F9">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="HeadingTextBlock"
+                   FontSize="24"
+                   FontWeight="SemiBold"
+                   Foreground="#20242A"
+                   Text="Settings" />
+
+        <Grid Grid.Row="1" Margin="0,22,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="180" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="LanguageLabelTextBlock"
+                       VerticalAlignment="Center"
+                       FontWeight="SemiBold"
+                       Text="Language" />
+            <ComboBox x:Name="LanguageComboBox"
+                      Grid.Column="1"
+                      Height="34"
+                      SelectionChanged="LanguageComboBox_SelectionChanged">
+                <ComboBoxItem x:Name="AutoLanguageItem" Tag="auto" />
+                <ComboBoxItem x:Name="JapaneseLanguageItem" Tag="ja" />
+                <ComboBoxItem x:Name="EnglishLanguageItem" Tag="en" />
+            </ComboBox>
+        </Grid>
+
+        <Border Grid.Row="2"
+                Padding="14"
+                BorderBrush="#D8DEE8"
+                BorderThickness="1"
+                Background="White"
+                CornerRadius="8">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBlock x:Name="ProcessesLabelTextBlock"
+                           FontWeight="SemiBold"
+                           Text="Monitored process names" />
+                <TextBlock x:Name="ProcessesHelpTextBlock"
+                           Grid.Row="1"
+                           Margin="0,5,0,10"
+                           Foreground="#5E6673"
+                           TextWrapping="Wrap"
+                           Text="Enter one Windows process name per line. .exe is optional." />
+                <TextBox x:Name="ProcessNamesTextBox"
+                         Grid.Row="2"
+                         AcceptsReturn="True"
+                         VerticalScrollBarVisibility="Auto"
+                         FontFamily="Consolas"
+                         Padding="8" />
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="3" Margin="0,16,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="90" />
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock x:Name="SampleIntervalLabelTextBlock"
+                           FontWeight="SemiBold"
+                           Text="Sample interval (seconds)" />
+                <TextBlock x:Name="SampleIntervalHelpTextBlock"
+                           Margin="0,4,12,0"
+                           Foreground="#5E6673"
+                           Text="Allowed range: 2-60" />
+            </StackPanel>
+            <TextBox x:Name="SampleIntervalTextBox"
+                     Grid.Column="1"
+                     Height="32"
+                     VerticalContentAlignment="Center"
+                     TextAlignment="Right" />
+        </Grid>
+
+        <Grid Grid.Row="4" Margin="0,14,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="90" />
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock x:Name="HistoryLimitLabelTextBlock"
+                           FontWeight="SemiBold"
+                           Text="Reports to keep" />
+                <TextBlock x:Name="HistoryLimitHelpTextBlock"
+                           Margin="0,4,12,0"
+                           Foreground="#5E6673"
+                           Text="Allowed range: 1-100" />
+            </StackPanel>
+            <TextBox x:Name="HistoryLimitTextBox"
+                     Grid.Column="1"
+                     Height="32"
+                     VerticalContentAlignment="Center"
+                     TextAlignment="Right" />
+        </Grid>
+
+        <StackPanel Grid.Row="5"
+                    Margin="0,22,0,0"
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal">
+            <Button x:Name="CancelButton"
+                    Width="110"
+                    Height="38"
+                    Margin="0,0,10,0"
+                    IsCancel="True"
+                    Content="Cancel" />
+            <Button x:Name="SaveButton"
+                    Width="120"
+                    Height="38"
+                    IsDefault="True"
+                    Click="SaveButton_Click"
+                    Content="Save" />
+        </StackPanel>
+    </Grid>
+</Window>

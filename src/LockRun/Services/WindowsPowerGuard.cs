@@ -1,44 +1,107 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using Microsoft.Win32.SafeHandles;
 
 namespace LockRun.Services;
 
-public sealed class WindowsPowerGuard
+public sealed class WindowsPowerGuard : IDisposable
 {
-    private bool _isEnabled;
+    private const uint PowerRequestContextVersion = 0;
+    private const uint PowerRequestContextSimpleString = 0x00000001;
+    private const string PowerRequestReason =
+        "Lock & Run is keeping monitored jobs active while the workstation is locked.";
 
-    [Flags]
-    private enum ExecutionState : uint
+    private SafeFileHandle? _powerRequestHandle;
+    private bool _disposed;
+
+    private enum PowerRequestType
     {
-        EsSystemRequired = 0x00000001,
-        EsContinuous = 0x80000000
+        SystemRequired = 0
     }
 
-    public bool IsEnabled => _isEnabled;
+    [StructLayout(LayoutKind.Sequential)]
+    private struct ReasonContext
+    {
+        public uint Version;
+
+        public uint Flags;
+
+        public nint SimpleReasonString;
+    }
+
+    public bool IsEnabled =>
+        _powerRequestHandle is { IsInvalid: false, IsClosed: false };
 
     public void Enable()
     {
-        var result = SetThreadExecutionState(
-            ExecutionState.EsContinuous |
-            ExecutionState.EsSystemRequired);
+        ObjectDisposedException.ThrowIf(_disposed, this);
 
-        if (result == 0)
+        if (IsEnabled)
         {
-            throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to enable sleep prevention.");
+            return;
         }
 
-        _isEnabled = true;
+        var reasonPointer = Marshal.StringToHGlobalUni(PowerRequestReason);
+        SafeFileHandle requestHandle;
+
+        try
+        {
+            var reasonContext = new ReasonContext
+            {
+                Version = PowerRequestContextVersion,
+                Flags = PowerRequestContextSimpleString,
+                SimpleReasonString = reasonPointer
+            };
+
+            requestHandle = PowerCreateRequest(ref reasonContext);
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(reasonPointer);
+        }
+
+        if (requestHandle.IsInvalid)
+        {
+            var errorCode = Marshal.GetLastWin32Error();
+            requestHandle.Dispose();
+            throw new Win32Exception(
+                errorCode,
+                "Failed to create the Windows power request.");
+        }
+
+        if (!PowerSetRequest(requestHandle, PowerRequestType.SystemRequired))
+        {
+            var error = Marshal.GetLastWin32Error();
+            requestHandle.Dispose();
+            throw new Win32Exception(error, "Failed to enable sleep prevention.");
+        }
+
+        _powerRequestHandle = requestHandle;
     }
 
     public void Disable()
     {
-        var result = SetThreadExecutionState(ExecutionState.EsContinuous);
-        if (result == 0)
+        var requestHandle = _powerRequestHandle;
+        _powerRequestHandle = null;
+
+        if (requestHandle is null)
         {
-            throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to disable sleep prevention.");
+            return;
         }
 
-        _isEnabled = false;
+        try
+        {
+            if (!PowerClearRequest(requestHandle, PowerRequestType.SystemRequired))
+            {
+                throw new Win32Exception(
+                    Marshal.GetLastWin32Error(),
+                    "Failed to disable sleep prevention.");
+            }
+        }
+        finally
+        {
+            requestHandle.Dispose();
+        }
     }
 
     public static void LockWorkStation()
@@ -49,8 +112,37 @@ public sealed class WindowsPowerGuard
         }
     }
 
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        try
+        {
+            Disable();
+        }
+        finally
+        {
+            _disposed = true;
+        }
+    }
+
     [DllImport("kernel32.dll", SetLastError = true)]
-    private static extern uint SetThreadExecutionState(ExecutionState esFlags);
+    private static extern SafeFileHandle PowerCreateRequest(ref ReasonContext context);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool PowerSetRequest(
+        SafeFileHandle powerRequest,
+        PowerRequestType requestType);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool PowerClearRequest(
+        SafeFileHandle powerRequest,
+        PowerRequestType requestType);
 
     [DllImport("user32.dll", EntryPoint = "LockWorkStation", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]

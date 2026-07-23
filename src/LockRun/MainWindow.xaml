@@ -4,9 +4,53 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Lock &amp; Run" Height="580" Width="920"
-        MinHeight="520" MinWidth="760"
-        Background="#F6F7F9">
+        Title="Lock &amp; Run"
+        Height="640"
+        Width="980"
+        MinHeight="560"
+        MinWidth="820"
+        Background="#F4F6F9">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="Foreground" Value="#172033" />
+            <Setter Property="BorderBrush" Value="#C8D1DE" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="12,6" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder"
+                                Padding="{TemplateBinding Padding}"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.88" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.72" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.45" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="#246BFE" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderBrush" Value="#246BFE" />
+        </Style>
+    </Window.Resources>
     <Grid Margin="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -15,83 +59,112 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <DockPanel Grid.Row="0" LastChildFill="False">
-            <StackPanel DockPanel.Dock="Left">
-                <TextBlock Text="Lock &amp; Run"
-                           FontSize="26"
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock x:Name="TitleTextBlock"
+                           Text="Lock &amp; Run"
+                           FontSize="28"
                            FontWeight="SemiBold"
-                           Foreground="#20242A" />
-                <TextBlock Text="Lock your PC. Keep jobs awake. Check what ran while you were away."
+                           Foreground="#172033" />
+                <TextBlock x:Name="SubtitleTextBlock"
                            Margin="0,6,0,0"
-                           Foreground="#5E6673" />
+                           Foreground="#5D687A"
+                           Text="Keep long-running jobs awake while Windows is locked." />
             </StackPanel>
             <Button x:Name="AwayModeButton"
-                    DockPanel.Dock="Right"
-                    Width="180"
-                    Height="44"
+                    Grid.Column="1"
+                    Width="210"
+                    Height="48"
                     Margin="24,0,0,0"
                     Click="AwayModeButton_Click"
-                    Content="Away Mode Start"
+                    Style="{StaticResource PrimaryButton}"
+                    Content="Monitor and lock"
+                    FontSize="14"
                     FontWeight="SemiBold" />
-        </DockPanel>
+        </Grid>
 
         <Border Grid.Row="1"
-                Margin="0,22,0,14"
-                Padding="14"
-                BorderBrush="#D8DEE8"
+                Margin="0,22,0,16"
+                Padding="15"
+                BorderBrush="#D7DEE9"
                 BorderThickness="1"
                 Background="White"
-                CornerRadius="8">
+                CornerRadius="10">
             <Grid>
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <StackPanel>
+                <Border x:Name="StateIndicatorBorder"
+                        Width="88"
+                        Height="32"
+                        VerticalAlignment="Top"
+                        Background="#E8F5EE"
+                        CornerRadius="16">
+                    <TextBlock x:Name="StateIndicatorTextBlock"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               FontWeight="SemiBold"
+                               Foreground="#16794A"
+                               Text="Ready" />
+                </Border>
+                <StackPanel Grid.Column="1" Margin="14,0,20,0">
                     <TextBlock x:Name="StatusTextBlock"
                                FontSize="15"
                                FontWeight="SemiBold"
-                               Foreground="#20242A"
+                               Foreground="#172033"
                                Text="Ready" />
                     <TextBlock x:Name="ConfiguredProcessesTextBlock"
                                Margin="0,6,0,0"
-                               Foreground="#5E6673"
+                               Foreground="#5D687A"
                                TextWrapping="Wrap" />
                 </StackPanel>
-                <Button Grid.Column="1"
-                        Width="132"
-                        Height="36"
-                        Margin="20,0,0,0"
-                        Click="RefreshButton_Click"
-                        Content="Refresh" />
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button x:Name="RefreshButton"
+                            Width="100"
+                            Height="36"
+                            Click="RefreshButton_Click"
+                            Content="Refresh" />
+                    <Button x:Name="SettingsButton"
+                            Width="100"
+                            Height="36"
+                            Margin="10,0,0,0"
+                            Click="SettingsButton_Click"
+                            Content="Settings" />
+                </StackPanel>
             </Grid>
         </Border>
 
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" />
                 <ColumnDefinition Width="2*" />
-                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
             <Border Grid.Column="0"
-                    BorderBrush="#D8DEE8"
+                    BorderBrush="#D7DEE9"
                     BorderThickness="1"
                     Background="White"
-                    CornerRadius="8">
+                    CornerRadius="10">
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Top"
-                               Margin="14,12,14,8"
+                    <TextBlock x:Name="ProcessListHeadingTextBlock"
+                               DockPanel.Dock="Top"
+                               Margin="14,13,14,9"
                                Text="Monitored processes currently running"
                                FontWeight="SemiBold"
-                               Foreground="#20242A" />
-                    <ListView x:Name="ProcessListView"
-                              Margin="8,0,8,8">
+                               Foreground="#172033" />
+                    <ListView x:Name="ProcessListView" Margin="8,0,8,8">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="140" />
-                                <GridViewColumn Header="PID" DisplayMemberBinding="{Binding ProcessId}" Width="80" />
-                                <GridViewColumn Header="Started" DisplayMemberBinding="{Binding StartedAtText}" Width="150" />
-                                <GridViewColumn Header="Window" DisplayMemberBinding="{Binding MainWindowTitle}" Width="260" />
+                                <GridViewColumn x:Name="NameColumn" Header="Name" DisplayMemberBinding="{Binding Name}" Width="110" />
+                                <GridViewColumn x:Name="CountColumn" Header="Count" DisplayMemberBinding="{Binding InstanceCount}" Width="70" />
+                                <GridViewColumn x:Name="PidColumn" Header="PIDs" DisplayMemberBinding="{Binding ProcessIds}" Width="145" />
+                                <GridViewColumn x:Name="WindowColumn" Header="Window" DisplayMemberBinding="{Binding MainWindowTitle}" Width="190" />
                             </GridView>
                         </ListView.View>
                     </ListView>
@@ -101,32 +174,47 @@
             <Border Grid.Column="1"
                     Margin="16,0,0,0"
                     Padding="14"
-                    BorderBrush="#D8DEE8"
+                    BorderBrush="#D7DEE9"
                     BorderThickness="1"
                     Background="White"
-                    CornerRadius="8">
+                    CornerRadius="10">
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Top"
-                               Text="Latest report"
-                               FontWeight="SemiBold"
-                               Foreground="#20242A" />
+                    <Grid DockPanel.Dock="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="LatestReportHeadingTextBlock"
+                                   VerticalAlignment="Center"
+                                   Text="Latest report"
+                                   FontWeight="SemiBold"
+                                   Foreground="#172033" />
+                        <Button x:Name="OpenReportsButton"
+                                Grid.Column="1"
+                                Height="30"
+                                Padding="10,0"
+                                Click="OpenReportsButton_Click"
+                                Content="Open folder" />
+                    </Grid>
                     <TextBox x:Name="ReportTextBox"
                              Margin="0,10,0,0"
                              BorderThickness="0"
-                             Background="#F6F7F9"
+                             Background="#F4F6F9"
                              Padding="10"
                              IsReadOnly="True"
                              TextWrapping="Wrap"
                              VerticalScrollBarVisibility="Auto"
+                             HorizontalScrollBarVisibility="Disabled"
                              FontFamily="Consolas"
                              Text="No away session has completed yet." />
                 </DockPanel>
             </Border>
         </Grid>
 
-        <TextBlock Grid.Row="3"
+        <TextBlock x:Name="FooterTextBlock"
+                   Grid.Row="3"
                    Margin="0,14,0,0"
-                   Foreground="#5E6673"
+                   Foreground="#5D687A"
                    Text="Closing the window keeps Lock &amp; Run in the tray. Use the tray menu to exit." />
     </Grid>
 </Window>
