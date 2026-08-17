@@ -62,6 +62,30 @@ public static class ReportStore
         }
     }
 
+    public static int DeleteHistory()
+    {
+        return DeleteHistory(ReportsDirectory);
+    }
+
+    internal static int DeleteHistory(string reportsDirectory)
+    {
+        if (!Directory.Exists(reportsDirectory))
+        {
+            return 0;
+        }
+
+        var reportPaths = Directory
+            .EnumerateFiles(reportsDirectory, "away-*.txt")
+            .ToList();
+
+        foreach (var reportPath in reportPaths)
+        {
+            File.Delete(reportPath);
+        }
+
+        return reportPaths.Count;
+    }
+
     private static string? TryTrimHistory(int historyLimit)
     {
         try

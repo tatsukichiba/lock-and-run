@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.2 - 2026-08-17
+
+- Added a confirmation-protected button for deleting all saved away-session report history without removing unrelated files.
+- Added automated coverage for report-history deletion and missing history directories.
+
 ## 0.2.1 - 2026-08-17
 
 - Fixed away-session durations longer than 24 hours wrapping back to `00:00:00` in saved reports.

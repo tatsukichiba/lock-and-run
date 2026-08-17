@@ -204,6 +204,45 @@ public partial class MainWindow : Window
         }
     }
 
+    private void DeleteReportsButton_Click(object sender, RoutedEventArgs e)
+    {
+        var confirmation = System.Windows.MessageBox.Show(
+            T(
+                "保存済みの離席レポートをすべて削除します。この操作は元に戻せません。",
+                "Delete all saved away-session reports? This action cannot be undone."),
+            T("レポート履歴を削除", "Delete report history"),
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning);
+
+        if (confirmation != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        try
+        {
+            var deletedCount = ReportStore.DeleteHistory();
+            _latestReportPath = null;
+            _hasReportContent = false;
+            ReportTextBox.Text = T(
+                "完了した離席セッションはまだありません。",
+                "No away session has completed yet.");
+            _readyStatusMessage = T(
+                $"レポート履歴を {deletedCount} 件削除しました。",
+                $"Deleted {deletedCount} report(s) from history.");
+            UpdateUiState();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            System.Windows.MessageBox.Show(
+                T("レポート履歴を削除できませんでした。", "Could not delete report history.") +
+                Environment.NewLine + ex.Message,
+                ProductDisplayName,
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+    }
+
     private void StartAwayMode()
     {
         if (_state != AwayModeState.Ready)
@@ -491,6 +530,7 @@ public partial class MainWindow : Window
         AwayModeButton.IsEnabled = ready;
         SettingsButton.IsEnabled = ready;
         RefreshButton.IsEnabled = _state is AwayModeState.Ready or AwayModeState.Monitoring;
+        DeleteReportsButton.IsEnabled = ready;
         _startAwayMenuItem.Enabled = ready;
 
         switch (_state)
@@ -562,6 +602,7 @@ public partial class MainWindow : Window
         SettingsButton.Content = T("設定", "Settings");
         ProcessListHeadingTextBlock.Text = T("現在稼働中の監視対象", "Monitored processes currently running");
         LatestReportHeadingTextBlock.Text = T("最新レポート", "Latest report");
+        DeleteReportsButton.Content = T("履歴を削除", "Delete history");
         OpenReportsButton.Content = T("フォルダーを開く", "Open folder");
         FooterTextBlock.Text = T(
             "ウィンドウを閉じてもトレイで動作します。終了はトレイメニューから行えます。",
