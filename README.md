@@ -22,6 +22,7 @@ Windowsの画面ロック自体は通常、実行中の処理を止めません�
 - 復帰時に継続・終了・新規検出・CPU時間増加をレポート
 - レポート履歴を自動保存
 - 保存済みレポート履歴を確認付きで一括削除
+- 実行中のプロセスを自動検出し、検索・選択して監視対象へ追加
 - 日本語・英語表示と監視対象を設定画面から変更
 - 同時に複数起動せず、既存ウィンドウを前面表示
 
@@ -68,6 +69,7 @@ CPU時間の増加は「処理活動が観測された」ことを示します�
 
 - 表示言語: 自動・日本語・英語
 - 監視するWindowsプロセス名
+- 実行中のプロセスを検索・選択して監視対象へ追加
 - サンプリング間隔: 2～60秒
 - 保存するレポート数: 1～100件
 
@@ -135,7 +137,7 @@ Lock & Run is a Windows 11 tray app for local AI agents, builds, scripts, and ot
 
 The release is self-contained; a separate .NET installation is not required.
 
-Saved report history can be opened or deleted from the main window. Deletion requires confirmation and only removes report files created by Lock & Run.
+Saved report history can be opened or deleted from the main window. Deletion requires confirmation and only removes report files created by Lock & Run. The settings window can discover currently running processes so selected names can be added without replacing existing monitoring settings.
 
 Release archives include a SHA-256 checksum and GitHub Actions build provenance. With GitHub CLI installed, verify a downloaded ZIP with:
 

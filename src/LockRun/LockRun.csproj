@@ -10,9 +10,9 @@
     <AssemblyName>LockRun</AssemblyName>
     <RootNamespace>LockRun</RootNamespace>
     <ApplicationIcon>Assets\LockRun.ico</ApplicationIcon>
-    <Version>0.2.2</Version>
-    <AssemblyVersion>0.2.2.0</AssemblyVersion>
-    <FileVersion>0.2.2.0</FileVersion>
+    <Version>0.3.0</Version>
+    <AssemblyVersion>0.3.0.0</AssemblyVersion>
+    <FileVersion>0.3.0.0</FileVersion>
     <Authors>tatsukichiba</Authors>
     <Description>Keep long-running jobs awake and record activity while Windows is locked.</Description>
     <RepositoryUrl>https://github.com/tatsukichiba/lock-and-run</RepositoryUrl>
