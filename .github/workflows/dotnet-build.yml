@@ -24,6 +24,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Verify release metadata
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: |
+          $tagVersion = $env:GITHUB_REF_NAME.Substring(1)
+          [xml] $project = Get-Content "src/LockRun/LockRun.csproj"
+          $projectVersion = $project.Project.PropertyGroup.Version
+
+          if ($projectVersion -ne $tagVersion) {
+            throw "Tag version '$tagVersion' does not match project version '$projectVersion'."
+          }
+
+          $heading = "## $tagVersion"
+          $hasChangelogSection = Get-Content "CHANGELOG.md" | Where-Object {
+            $_.Equals($heading, [StringComparison]::Ordinal) -or
+              $_.StartsWith("$heading ", [StringComparison]::Ordinal)
+          }
+
+          if (-not $hasChangelogSection) {
+            throw "CHANGELOG.md does not contain a section for $tagVersion."
+          }
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
@@ -130,12 +152,13 @@ jobs:
           $checksumPath = "$releaseZip.sha256"
           "$hash  $(Split-Path $releaseZip -Leaf)" | Set-Content $checksumPath -Encoding ascii
 
-          $version = $tag.TrimStart("v")
+          $version = $tag.Substring(1)
           $changelog = Get-Content "CHANGELOG.md"
           $heading = "## $version"
           $start = [Array]::FindIndex($changelog, [Predicate[string]] {
             param($line)
-            $line.StartsWith($heading, [StringComparison]::Ordinal)
+            $line.Equals($heading, [StringComparison]::Ordinal) -or
+              $line.StartsWith("$heading ", [StringComparison]::Ordinal)
           })
 
           if ($start -lt 0) {

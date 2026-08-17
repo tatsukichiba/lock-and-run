@@ -85,6 +85,25 @@ public sealed class AwayReportTests
         StringAssert.Contains(report.ToSummary(false), "Sampling errors: 1");
     }
 
+    [TestMethod]
+    public void ToSummary_FormatsDurationsLongerThanOneDayWithoutWrapping()
+    {
+        var session = new AwaySession(
+            StartedAt,
+            [],
+            new AppResourceSnapshot(1, TimeSpan.Zero));
+        session.MarkLockConfirmed(StartedAt.AddSeconds(1));
+
+        var report = AwayReport.Create(
+            session,
+            [],
+            new AppResourceSnapshot(1, TimeSpan.Zero),
+            StartedAt.AddDays(1).AddHours(3).AddMinutes(4).AddSeconds(5));
+
+        StringAssert.Contains(report.ToSummary(false), "Duration: 1d 03:04:05");
+        StringAssert.Contains(report.ToSummary(true), "経過時間: 1日 03:04:05");
+    }
+
     private static MonitoredProcessInfo Process(
         string name,
         int processId,

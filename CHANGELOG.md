@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1 - 2026-08-17
+
+- Fixed away-session durations longer than 24 hours wrapping back to `00:00:00` in saved reports.
+- Added an automated release check that requires the Git tag, application version, and changelog section to match.
+- Added regression coverage for multi-day report formatting.
+
 ## 0.2.0 - 2026-07-23
 
 - Added explicit ready, lock-confirmation, monitoring, and report-generation states.

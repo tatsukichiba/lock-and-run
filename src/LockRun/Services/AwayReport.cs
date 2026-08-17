@@ -113,7 +113,7 @@ public sealed class AwayReport
             開始: {StartedAt:yyyy-MM-dd HH:mm:ss}
             ロック確認: {FormatLockConfirmedAt("未確認")}
             復帰: {EndedAt:yyyy-MM-dd HH:mm:ss}
-            経過時間: {Duration:hh\:mm\:ss}
+            経過時間: {FormatDuration(Duration, true)}
             サンプル数: {Samples.Count}
 
             開始時の監視対象: {StartProcesses.Count}
@@ -142,7 +142,7 @@ public sealed class AwayReport
             Started: {StartedAt:yyyy-MM-dd HH:mm:ss}
             Lock confirmed: {FormatLockConfirmedAt("Not confirmed")}
             Returned: {EndedAt:yyyy-MM-dd HH:mm:ss}
-            Duration: {Duration:hh\:mm\:ss}
+            Duration: {FormatDuration(Duration, false)}
             Samples: {Samples.Count}
 
             Monitored at start: {StartProcesses.Count}
@@ -277,6 +277,21 @@ public sealed class AwayReport
     private static string FormatCpuTimeDelta(TimeSpan delta)
     {
         return $"+{delta.TotalSeconds.ToString("F2", CultureInfo.InvariantCulture)} sec";
+    }
+
+    private static string FormatDuration(TimeSpan duration, bool japanese)
+    {
+        var sign = duration < TimeSpan.Zero ? "-" : string.Empty;
+        var absoluteDuration = duration.Duration();
+        var clock = $"{absoluteDuration.Hours:00}:{absoluteDuration.Minutes:00}:{absoluteDuration.Seconds:00}";
+
+        if (absoluteDuration.Days == 0)
+        {
+            return sign + clock;
+        }
+
+        var dayLabel = japanese ? "日" : "d";
+        return $"{sign}{absoluteDuration.Days}{dayLabel} {clock}";
     }
 
     private static double ToMegabytes(long bytes)
