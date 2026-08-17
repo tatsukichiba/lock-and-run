@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0 - 2026-08-17
+
+- Added automatic discovery of currently running processes from the settings window.
+- Added a searchable multi-select process picker that appends selected names without replacing existing monitoring settings.
+- Excluded already configured process names and Lock & Run itself from discovery results.
+- Added automated coverage for process-name normalization, grouping, instance counts, and window-title summaries.
+
 ## 0.2.2 - 2026-08-17
 
 - Added a confirmation-protected button for deleting all saved away-session report history without removing unrelated files.

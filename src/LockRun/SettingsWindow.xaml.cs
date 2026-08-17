@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -80,9 +81,7 @@ public partial class SettingsWindow : Window
             return;
         }
 
-        var processNames = ProcessNamesTextBox.Text
-            .Split(['\r', '\n', ','], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .ToList();
+        var processNames = GetEnteredProcessNames();
 
         if (processNames.Count == 0)
         {
@@ -103,6 +102,39 @@ public partial class SettingsWindow : Window
         DialogResult = true;
     }
 
+    private void DiscoverProcessesButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var processPicker = new ProcessPickerWindow(GetEnteredProcessNames(), UseJapanese)
+            {
+                Owner = this
+            };
+
+            if (processPicker.ShowDialog() != true)
+            {
+                return;
+            }
+
+            var processNames = GetEnteredProcessNames()
+                .Concat(processPicker.SelectedProcessNames)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(static name => name, StringComparer.OrdinalIgnoreCase);
+            ProcessNamesTextBox.Text = string.Join(Environment.NewLine, processNames);
+            ProcessNamesTextBox.Focus();
+            ProcessNamesTextBox.CaretIndex = ProcessNamesTextBox.Text.Length;
+        }
+        catch (Exception ex) when (ex is Win32Exception or InvalidOperationException)
+        {
+            System.Windows.MessageBox.Show(
+                T("実行中のプロセスを取得できませんでした。", "Could not get the running process list.") +
+                Environment.NewLine + ex.Message,
+                Title,
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+        }
+    }
+
     private void ApplyLanguage()
     {
         Title = T("設定", "Settings");
@@ -115,6 +147,7 @@ public partial class SettingsWindow : Window
         ProcessesHelpTextBlock.Text = T(
             "Windowsのプロセス名を1行に1つ入力します。.exeは省略できます。",
             "Enter one Windows process name per line. .exe is optional.");
+        DiscoverProcessesButton.Content = T("実行中から追加", "Add running");
         SampleIntervalLabelTextBlock.Text = T("サンプリング間隔（秒）", "Sample interval (seconds)");
         SampleIntervalHelpTextBlock.Text = T("入力範囲: 2～60", "Allowed range: 2-60");
         HistoryLimitLabelTextBlock.Text = T("保存するレポート数", "Reports to keep");
@@ -126,6 +159,13 @@ public partial class SettingsWindow : Window
     private string GetSelectedLanguage()
     {
         return (LanguageComboBox.SelectedItem as ComboBoxItem)?.Tag as string ?? "auto";
+    }
+
+    private List<string> GetEnteredProcessNames()
+    {
+        return ProcessNamesTextBox.Text
+            .Split(['\r', '\n', ','], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToList();
     }
 
     private string T(string japanese, string english)
